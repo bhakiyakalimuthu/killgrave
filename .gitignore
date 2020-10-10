@@ -12,6 +12,6 @@
 *.out
 coverage.txt
 
-imposters
+cfg/imposters
 
 !internal/server/http/test/testdata/imposters/

@@ -25,7 +25,10 @@ func (i *Imposter) Delay() time.Duration {
 
 // CalculateFilePath calculate file path based on basePath of imposter directory
 func (i *Imposter) CalculateFilePath(filePath string) string {
-	return path.Join(i.BasePath, filePath)
+	fmt.Printf("basepath %s \n filepath %s",i.BasePath,filePath)
+	p:=path.Join(i.BasePath, filePath)
+	fmt.Printf("\n calc path %s ",p)
+	return p
 }
 
 // Request represent the structure of real request

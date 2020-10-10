@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -31,30 +30,41 @@ const (
 )
 
 func main() {
-	var (
-		host           = flag.String("host", _defaultHost, "if you run your server on a different host")
-		port           = flag.Int("port", _defaultPort, "port to run the server")
-		imposters      = flag.String("imposters", _defaultImpostersPath, "directory where your imposters are saved")
-		showVersion    = flag.Bool("version", false, "show the _version of the application")
-		configFilePath = flag.String("config", _defaultConfigFile, "path with configuration file")
-		watcherFlag    = flag.Bool("watcher", false, "file watcher, reload the server with each file change")
-		proxyModeFlag  = flag.String("proxy-mode", _defaultProxyMode.String(), "proxy mode you can choose between (all, missing or none)")
-		proxyURLFlag   = flag.String("proxy-url", "", "proxy url, you need to choose a proxy-mode")
-	)
-	flag.Parse()
+	// var (
+	// 	host           = flag.String("host", _defaultHost, "if you run your server on a different host")
+	// 	port           = flag.Int("port", _defaultPort, "port to run the server")
+	// 	imposters      = flag.String("imposters", _defaultImpostersPath, "directory where your imposters are saved")
+	// 	showVersion    = flag.Bool("version", false, "show the _version of the application")
+	// 	configFilePath = flag.String("config", _defaultConfigFile, "path with configuration file")
+	// 	watcherFlag    = flag.Bool("watcher", false, "file watcher, reload the server with each file change")
+	// 	proxyModeFlag  = flag.String("proxy-mode", _defaultProxyMode.String(), "proxy mode you can choose between (all, missing or none)")
+	// 	proxyURLFlag   = flag.String("proxy-url", "", "proxy url, you need to choose a proxy-mode")
+	// )
+	// flag.Parse()
 
-	if *showVersion {
+	var (
+		host           = _defaultHost
+		port           =  _defaultPort
+		imposters      =  _defaultImpostersPath
+		showVersion    = false
+		configFilePath = "cfg/config.yml"
+		watcherFlag    = false
+		proxyModeFlag  =  _defaultProxyMode.String()
+		proxyURLFlag   = ""
+	)
+
+	if showVersion {
 		fmt.Printf("%s version %s\n", _name, _version)
 		return
 	}
 
 	// The config file is mandatory over the flag options
 	cfg, err := killgrave.NewConfig(
-		*imposters,
-		*host,
-		*port,
-		killgrave.WithProxyConfiguration(*proxyModeFlag, *proxyURLFlag),
-		killgrave.WithConfigFile(*configFilePath),
+		imposters,
+		host,
+		port,
+		killgrave.WithProxyConfiguration(proxyModeFlag, proxyURLFlag),
+		killgrave.WithConfigFile(configFilePath),
 	)
 	if err != nil {
 		log.Println(err)
@@ -69,7 +79,7 @@ func main() {
 	srv.Run()
 
 	// Initialize and start the file watcher if the watcher option is true
-	w := runWatcher(*watcherFlag, cfg.ImpostersPath, &srv, cfg.Host, cfg.Port, cfg)
+	w := runWatcher(watcherFlag, cfg.ImpostersPath, &srv, cfg.Host, cfg.Port, cfg)
 
 	<-done
 	close(done)
